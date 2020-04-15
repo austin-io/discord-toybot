@@ -29,7 +29,7 @@ dis.on("ready", () => {
 });
 
 dis.on("message", msg => {
-  console.log(msg);
+  //console.log(msg);
   msg.content = msg.content.toLowerCase();
 
   if(msg.content.substr(0,3) != "toy") return;
@@ -62,6 +62,9 @@ dis.on("message", msg => {
     case "jojo":
       getJojo(msg);
       break;
+    case "stream":
+      streamer(msg, args);
+      break;
   }
 
   console.log("===========================================");
@@ -83,8 +86,44 @@ const getJojo = (msg) => {
   }).catch(err => {
     console.log(err);
   }).then(() => {
-    console.log("Complete");
+    console.log("Jojos delivered");
   });
+};
+
+function streamer(msg, args){
+  if(args.length == 2) {
+    startStream(msg);
+  } else if(args.length == 3){
+    startStreamByName(msg, args[2]);
+  }
+}
+
+function startStream(msg) {
+  console.log("Stream General");
+  if(msg.guild.available){
+    if(msg.guild.channels){
+      msg.guild.channels.cache.map(ch => {
+        if(ch.name === "General") {
+          console.log(ch.id);
+          msg.reply("https://discordapp.com/channels/" + msg.guild.id + "/" + ch.id);
+        }
+      });
+    }
+  }
+};
+
+function startStreamByName(msg, channelName) {
+  console.log("Stream " + channelName);
+  if(msg.guild.available){
+    if(msg.guild.channels){
+      msg.guild.channels.cache.map(ch => {
+        if(ch.name.toLowerCase() === channelName && ch.type == "voice") {
+          console.log(ch.id);
+          msg.reply("https://discordapp.com/channels/" + msg.guild.id + "/" + ch.id);
+        }
+      });
+    }
+  }
 };
 
 const http = require('http');
